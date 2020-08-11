@@ -14,7 +14,7 @@ public class UrlShortener {
     private String shortString ;
 
     @Column(name = "expansion")
-    private String expasionString;
+    private String expansionString;
 
     public String getShortString() {
         return shortString;
@@ -24,12 +24,12 @@ public class UrlShortener {
         this.shortString = shortString;
     }
 
-    public String getExpasionString() {
-        return expasionString;
+    public String getExpansionString() {
+        return expansionString;
     }
 
-    public void setExpasionString(String expasionString) {
-        this.expasionString = expasionString;
+    public void setExpansionString(String expasionString) {
+        this.expansionString = expasionString;
     }
 
     
