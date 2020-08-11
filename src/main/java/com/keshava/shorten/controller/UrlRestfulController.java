@@ -1,8 +1,10 @@
 package com.keshava.shorten.controller;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import com.keshava.shorten.entity.UrlShortener;
+import com.keshava.shorten.exceptionhandler.InvalidUrlException;
 import com.keshava.shorten.exceptionhandler.UrlAlreadyTakenException;
 import com.keshava.shorten.service.UrlService;
 
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class UrlRestfulController {
-    
+
     @Autowired
     UrlService urlService;
 
@@ -27,12 +29,13 @@ public class UrlRestfulController {
     }
 
     @GetMapping("/url/{shorten}")
-    public UrlShortener getExpandedUrl( @PathVariable String shorten) {
+    public UrlShortener getExpandedUrl(@PathVariable String shorten) {
         return urlService.getExpandedUrl(shorten);
     }
 
     @PostMapping("/shorten")
-    public UrlShortener shortenUrl( @RequestBody UrlShortener urlShortener) throws UrlAlreadyTakenException {
+    public UrlShortener shortenUrl(@RequestBody UrlShortener urlShortener)
+            throws UrlAlreadyTakenException, InvalidUrlException {
         return urlService.shortenUrl(urlShortener);
     }
 
