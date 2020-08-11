@@ -1,6 +1,5 @@
 package com.keshava.shorten.controller;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 import com.keshava.shorten.entity.UrlShortener;
