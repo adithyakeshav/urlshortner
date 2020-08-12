@@ -24,7 +24,7 @@ public class UrlService {
     }
 
     public UrlShortener getExpandedUrl(String url) throws ResourceNotFoundException {
-        return urlRepository.findById(url).orElseThrow(() -> new ResourceNotFoundException("Url Not Found"));
+        return urlRepository.findById(url).orElseThrow(() -> new ResourceNotFoundException("Handle Not Found : /" + url));
     }
 
     public UrlShortener shortenUrl(UrlShortener urlShortener) throws UrlAlreadyTakenException,InvalidUrlException {

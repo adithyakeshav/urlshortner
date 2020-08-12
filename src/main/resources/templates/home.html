@@ -12,12 +12,24 @@
     <div class="row jumbotron top-box">
         <div class="col-md-5">
             <h2> URL Shortener </h2>
+            <div th:if="${message != null}">
+                <small id="passwordHelp" class="text-danger" th:text="${message}">
+                </small>
+            </div>
         </div>
-        <div class = "addmargin col-md-7">
-            <form th:action="@{/submit}" class = "form form-group" method="POST" th:object="${urlShortener}" >
-                <input placeholder="ShortForm" type="text" class="form form-inline" th:field="*{shortString}"  />
-                <input placeholder="Valid URL" class="form form-inline" type="text" th:field="*{expansionString}">
-                <button type="submit" class="btn btn-primary">Shorten</button>
+        <div class = "col-md-7">
+            <form th:action="@{/submit}" method="POST" th:object="${urlShortener}" >
+                <div class="row">
+                    <div class="col-sm-5">
+                        <input placeholder="ShortForm" type="text" class="form form-control addmargin" th:field="*{shortString}" />
+                    </div>
+                    <div class="col-sm-5">
+                        <input placeholder="Valid URL" class="form form-control addmargin" type="text" th:field="*{expansionString}">
+                    </div>
+                    <div class="col-sm-2">
+                        <button type="submit" class="btn btn-primary addmargin">Shorten</button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
