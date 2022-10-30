@@ -1,8 +1,6 @@
 package com.keshava.shorten.controller;
 
-import com.keshava.shorten.entity.AuthenticationRequest;
-import com.keshava.shorten.entity.AuthenticationResponse;
-import com.keshava.shorten.entity.UrlShortener;
+import com.keshava.shorten.entity.*;
 import com.keshava.shorten.exceptionhandler.InvalidUrlException;
 import com.keshava.shorten.exceptionhandler.UrlAlreadyTakenException;
 import com.keshava.shorten.service.UrlService;
@@ -13,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +33,10 @@ public class UrlRestfulController {
     @Autowired
     AuthenticationManager manager;
 
+    private UserDetails getUserDetails() {
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
     @RequestMapping(path = "/auth", method = RequestMethod.POST)
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) throws Exception {
         try {
@@ -48,18 +52,25 @@ public class UrlRestfulController {
 
     @GetMapping("/urls")
     public List<UrlShortener> getUrls() {
-        return urlService.getUrls();
+        UserDetails userDetails = getUserDetails();
+        return urlService.getUrls(userDetails.getUsername());
     }
 
     @GetMapping("/url/{shorten}")
     public UrlShortener getExpandedUrl(@PathVariable String shorten) {
-        return urlService.getExpandedUrl(shorten);
+        UserDetails userDetails = getUserDetails();
+        return urlService.getExpandedUrl(new UrlIdentity(userDetails.getUsername(), shorten));
     }
 
     @PostMapping("/shorten")
-    public UrlShortener shortenUrl(@RequestBody UrlShortener urlShortener)
+    public UrlShortener shortenUrl(@RequestBody ShortenRequest shortenRequest)
             throws UrlAlreadyTakenException, InvalidUrlException {
-        return urlService.shortenUrl(urlShortener);
+        UserDetails userDetails = getUserDetails();
+        UrlShortener shortener = new UrlShortener(
+                new UrlIdentity(userDetails.getUsername(), shortenRequest.getShortString()),
+                shortenRequest.getExpansionString()
+        );
+        return urlService.shortenUrl(shortener);
     }
 
 }

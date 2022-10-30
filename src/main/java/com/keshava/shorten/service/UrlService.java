@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import com.keshava.shorten.entity.UrlIdentity;
 import com.keshava.shorten.entity.UrlShortener;
 import com.keshava.shorten.exceptionhandler.InvalidUrlException;
 import com.keshava.shorten.exceptionhandler.ResourceNotFoundException;
@@ -23,19 +24,20 @@ public class UrlService {
     @Autowired
     UrlRepository urlRepository;
 
-    public List<UrlShortener> getUrls() {
+    public List<UrlShortener> getUrls(String userName) {
         LOGGER.info("Getting URLs from the repository");
-        return urlRepository.findAll();
+
+        return urlRepository.findByUrlIdentityUser(userName);
     }
 
-    public UrlShortener getExpandedUrl(String url) throws ResourceNotFoundException {
-        return urlRepository.findById(url).orElseThrow(() -> new ResourceNotFoundException("Handle Not Found : /" + url));
+    public UrlShortener getExpandedUrl(UrlIdentity key) throws ResourceNotFoundException {
+        return urlRepository.findById(key).orElseThrow(() -> new ResourceNotFoundException("Handle Not Found : /" + key));
     }
 
     public UrlShortener shortenUrl(UrlShortener urlShortener) throws UrlAlreadyTakenException,InvalidUrlException {
-        if (urlRepository.findById(urlShortener.getShortString()).orElse(null) != null) {
+        if (urlRepository.findById(urlShortener.getId()).orElse(null) != null) {
             LOGGER.error("URL is already taken : " + urlShortener.getExpansionString());
-            throw new UrlAlreadyTakenException("Url '" + urlShortener.getShortString() + "' already taken");
+            throw new UrlAlreadyTakenException("Url '" + urlShortener.getId() + "' already taken");
         }
         try {
             LOGGER.info("Validating if expansionString is valid URL");

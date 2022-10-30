@@ -1,27 +1,31 @@
 package com.keshava.shorten.entity;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "SHORTENER")
+@Table(name = "shortener")
 public class UrlShortener {
-    
-    @Id
-    @Column(name = "short")
-    private String shortString ;
+
+    @EmbeddedId
+    private UrlIdentity id;
 
     @Column(name = "expansion")
     private String expansionString;
 
-    public String getShortString() {
-        return shortString;
+    public UrlIdentity getId() {
+        return id;
     }
 
-    public void setShortString(String shortString) {
-        this.shortString = shortString;
+    public UrlShortener(UrlIdentity id, String expansionString) {
+        this.id = id;
+        this.expansionString = expansionString;
+    }
+
+    public void setId(UrlIdentity id) {
+        this.id = id;
     }
 
     public String getExpansionString() {
@@ -32,5 +36,6 @@ public class UrlShortener {
         this.expansionString = expasionString;
     }
 
-    
+    public UrlShortener() {
+    }
 }

@@ -1,11 +1,15 @@
 package com.keshava.shorten.controller;
 
+import com.keshava.shorten.entity.ShortenRequest;
+import com.keshava.shorten.entity.UrlIdentity;
 import com.keshava.shorten.entity.UrlShortener;
 import com.keshava.shorten.service.UrlService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,15 +29,17 @@ public class UrlWebController {
 
     @GetMapping("/")
     public String homePage(Model model) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("urlShortener", new UrlShortener());
-        model.addAttribute("urls", urlService.getUrls());
+        model.addAttribute("urls", urlService.getUrls(userDetails.getUsername()));
         return "home";
     }
 
     @GetMapping("/{shortened}")
     public String gotoUrl(@PathVariable String shortened, RedirectAttributes redirectAttributes) {
         try {
-            UrlShortener urlShortener = urlService.getExpandedUrl(shortened);
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UrlShortener urlShortener = urlService.getExpandedUrl(new UrlIdentity(userDetails.getUsername(), shortened));
             LOGGER.info("Redirecting to the URL : " + urlShortener.getExpansionString());
             return "redirect:" + urlShortener.getExpansionString();
         } catch(Exception e) {
@@ -45,9 +51,15 @@ public class UrlWebController {
     }
 
     @RequestMapping(value = "/submit", method = RequestMethod.POST)
-    public String postMethodName(@ModelAttribute("urlShortener") UrlShortener urlShortener, RedirectAttributes redirectAttributes) {
+    public String postMethodName(@ModelAttribute("urlShortener") ShortenRequest shortenRequest, RedirectAttributes redirectAttributes) {
         try {
-            urlService.shortenUrl(urlShortener);
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UrlShortener shortener = new UrlShortener(
+                    new UrlIdentity(userDetails.getUsername(), shortenRequest.getShortString()),
+                    shortenRequest.getExpansionString()
+            );
+
+            urlService.shortenUrl(shortener);
             LOGGER.info("Shorten URL success");
         } catch(Exception e) {
             LOGGER.error("Error while shortening URL : " + e);
