@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface UrlRepository extends JpaRepository <UrlShortener, UrlIdentity>{
-    List<UrlShortener> findByIdUser(String user);
+    List<UrlShortener> findByIdUsername(String user);
 }
