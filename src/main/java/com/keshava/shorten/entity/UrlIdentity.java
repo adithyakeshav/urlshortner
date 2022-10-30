@@ -6,13 +6,13 @@ import java.util.Objects;
 
 @Embeddable
 public class UrlIdentity implements Serializable {
-    private String user;
+    private String username;
     private String shortString;
 
     @Override
     public String toString() {
         return " {" +
-                "user='" + user + '\'' +
+                "user='" + username + '\'' +
                 ", shortString='" + shortString + '\'' +
                 '}';
     }
@@ -22,12 +22,12 @@ public class UrlIdentity implements Serializable {
     public UrlIdentity() {
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getShortString() {
@@ -43,11 +43,11 @@ public class UrlIdentity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UrlIdentity that = (UrlIdentity) o;
-        return Objects.equals(user, that.user) && Objects.equals(shortString, that.shortString);
+        return Objects.equals(username, that.username) && Objects.equals(shortString, that.shortString);
     }
 
-    public UrlIdentity(String user, String shortString) {
-        this.user = user;
+    public UrlIdentity(String username, String shortString) {
+        this.username = username;
         this.shortString = shortString;
     }
 }
