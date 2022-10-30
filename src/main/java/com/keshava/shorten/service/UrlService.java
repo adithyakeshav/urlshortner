@@ -27,7 +27,7 @@ public class UrlService {
     public List<UrlShortener> getUrls(String userName) {
         LOGGER.info("Getting URLs from the repository");
 
-        return urlRepository.findByUrlIdentityUser(userName);
+        return urlRepository.findByIdUser(userName);
     }
 
     public UrlShortener getExpandedUrl(UrlIdentity key) throws ResourceNotFoundException {
