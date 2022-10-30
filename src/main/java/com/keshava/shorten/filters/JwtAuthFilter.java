@@ -35,6 +35,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             String token = request.getHeader("Authorization");
             String username = null;
+            LOGGER.info("Validating JWT Token");
             if (token != null)
                 username = jwtUtil.extractUsername(token);
 

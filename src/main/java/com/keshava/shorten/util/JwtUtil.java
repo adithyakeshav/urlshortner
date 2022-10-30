@@ -4,10 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +16,22 @@ import java.util.function.Function;
 
 @Service
 public class JwtUtil {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtUtil.class);
     private final String SECRET_KEY = System.getenv("SECRET_KEY");
+
+    private int getTokenExpiry() {
+        try {
+            String expiry = System.getenv("TOKEN_EXPIRY");
+            LOGGER.info(String.format("Token expiry set to %s", expiry));
+            return Integer.parseInt(expiry);
+        }
+        catch (Exception e) {
+            LOGGER.error("Error setting up Token expiry : " + e);
+            LOGGER.info("Setting DEFAULT_TOKEN_EXPIRY_MINS : 5");
+            return 5;
+        }
+
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -47,7 +62,7 @@ public class JwtUtil {
     private String createToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 20))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * getTokenExpiry()))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
     }
 
