@@ -3,6 +3,8 @@ package com.keshava.shorten.filters;
 import com.keshava.shorten.service.UserService;
 import com.keshava.shorten.util.JwtUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,8 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(JwtAuthFilter.class);
 
     @Autowired
     private UserService userService;
@@ -44,7 +48,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException ex) {
-            request.setAttribute("Exception while validating Token", ex);
+            LOGGER.error("JWT Token expired : " + ex);
+            request.setAttribute("expired", ex);
         }
         filterChain.doFilter(request, response);
     }
